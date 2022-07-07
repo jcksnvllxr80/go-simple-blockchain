@@ -17,7 +17,7 @@ import (
 type Block struct {
 	Pos       int
 	Data      BookCheckout
-	Timestanp string
+	Timestamp string
 	Hash      string
 	PrevHash  string
 }
@@ -46,7 +46,7 @@ var BlockChain *Blockchain
 func (b *Block) generateHash() {
 	bytes, _ := json.Marshal(b.Data)
 
-	data := string(b.Pos) + b.Timestanp + string(bytes) + b.PrevHash
+	data := string(b.Pos) + b.Timestamp + string(bytes) + b.PrevHash
 	hash := sha256.New()
 	hash.Write([]byte(data))
 	b.Hash = hex.EncodeToString(hash.Sum(nil))
@@ -55,7 +55,8 @@ func (b *Block) generateHash() {
 func CreateBlock(prevBlock *Block, checkoutItem BookCheckout) *Block {
 	block := &Block{}
 	block.Pos = prevBlock.Pos + 1
-	block.Timestanp = time.Now().String()
+	block.Timestamp = time.Now().String()
+	block.Data = checkoutItem
 	block.PrevHash = prevBlock.Hash
 	block.generateHash()
 
@@ -163,7 +164,7 @@ func main() {
 
 	go func() {
 		for _, block := range BlockChain.blocks {
-			fmt.Printf("Preev. hash: %x\n", block.PrevHash)
+			fmt.Printf("Prev. hash: %x\n", block.PrevHash)
 			bytes, _ := json.MarshalIndent(block.Data, "", " ")
 			fmt.Printf("Data:%v\n", string(bytes))
 			fmt.Printf("Hash:%x\n", block.Hash)
